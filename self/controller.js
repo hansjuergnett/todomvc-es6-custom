@@ -4,26 +4,35 @@
 
 'use strict'
 
-export default class {
+export default class Controller{
 
-    constructor(view) {
-        this.items = this.getItems()
-        view.renderItems(this.items)
+    constructor(view, store) {
+
+        this.view = view
+        this.store = store
+        //this.items = this.getItems()
+        this.getItems().then(items=>{
+            this.view.renderItems(items)
+        })
+        this.view.registerCallbacks(this.addItem.bind(this), this.removeItem.bind(this))
     }
 
+   addItem(item){
+       this.view.addItemToHtml(item)
+     //this.items.push(item)
+       //this.view.renderItems(this.items)
+   }
 
-   onAddItem(item){
-       this.items.push(item)
+   removeItem(item){
+
+       for(let idx = 0; idx < this.items.length; idx++){
+           if(this.items[idx].title == item){
+               this.items.slice(idx)
+           }
+       }
    }
 
     getItems(){
-        return[
-            {
-                title: 'Einkaufen'
-            },
-            {
-                title: 'Auto waschen'
-            }
-        ]
+        return this.store.getItems()
     }
 }
